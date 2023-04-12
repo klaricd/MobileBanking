@@ -21,7 +21,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         navigationController?.isNavigationBarHidden = true
         
         setupTitle()
-        setupTextField()
+        setupPasswordTextField()
         setupButton()
     }
     
@@ -37,15 +37,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         titleLabel.layer.masksToBounds = true
         titleLabel.text = "Log in"
         
-        NSLayoutConstraint.activate([
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            titleLabel.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50),
-            titleLabel.widthAnchor.constraint(equalToConstant: 130),
-            titleLabel.heightAnchor.constraint(equalToConstant: 50)
-        ])
+        Constraints.setupLoginTitle(label: titleLabel, view: view)
     }
     
-    func setupTextField() {
+    func setupPasswordTextField() {
         view.addSubview(passwordTextField)
         
         passwordTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -57,12 +52,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         passwordTextField.layer.cornerRadius = 10
         passwordTextField.placeholder = "Enter your password!"
         
-        NSLayoutConstraint.activate([
-            passwordTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            passwordTextField.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            passwordTextField.widthAnchor.constraint(equalToConstant: 220),
-            passwordTextField.heightAnchor.constraint(equalToConstant: 50)
-        ])
+        Constraints.setupLoginPassword(password: passwordTextField, view: view)
     }
     
     func setupButton() {
@@ -74,12 +64,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         loginButton.configuration?.baseForegroundColor = .black
         loginButton.configuration?.title = "Log in"
         
-        NSLayoutConstraint.activate([
-            loginButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 30),
-            loginButton.centerXAnchor.constraint(equalTo: passwordTextField.centerXAnchor),
-            loginButton.widthAnchor.constraint(equalToConstant: 90),
-            loginButton.heightAnchor.constraint(equalToConstant: 40)
-        ])
+        Constraints.setupLoginButton(button: loginButton, password: passwordTextField, view: view)
         
         // add button action
         loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)

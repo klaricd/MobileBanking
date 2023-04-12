@@ -22,7 +22,7 @@ class UserInformationViewController: UIViewController, UITableViewDelegate, UITa
     // MARK: - Labels
     let transaction = UILabel()
     let tableView = UITableView()
-    let scrollView = UIScrollView()
+    let myScrollView = UIScrollView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,11 +38,6 @@ class UserInformationViewController: UIViewController, UITableViewDelegate, UITa
         
         setupNavigationBar()
         setupAccountInfo()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        setupScrollView()
     }
     
     // MARK: - UI Setup Functions
@@ -64,21 +59,17 @@ class UserInformationViewController: UIViewController, UITableViewDelegate, UITa
     }
     
     func setupScrollView() {
-        scrollView.delegate = self
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(scrollView)
+        myScrollView.delegate = self
+        myScrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(myScrollView)
         
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            scrollView.heightAnchor.constraint(equalToConstant: 160),
-        ])
+        Constraints.setupScrollViewConstraints(scrollView: myScrollView, view: view)
         
         viewModel.getData {
             guard let accounts = self.data?.acounts else { return }
             if (accounts.isEmpty) { return }
-            self.scrollView.contentSize = CGSize(width: self.view.frame.width * CGFloat(accounts.count), height: 150)
-            self.scrollView.isPagingEnabled = true
+            self.myScrollView.contentSize = CGSize(width: self.view.frame.width * CGFloat(accounts.count), height: 150)
+            self.myScrollView.isPagingEnabled = true
             
             // create label for each account
             for (i, account) in accounts.enumerated() {
@@ -86,18 +77,21 @@ class UserInformationViewController: UIViewController, UITableViewDelegate, UITa
                 label.frame = CGRect(x: self.view.frame.width * CGFloat(i), y: 0, width: self.view.frame.width, height: 150)
                 label.font = UIFont.systemFont(ofSize: 20)
                 label.textAlignment = .center
-                self.scrollView.addSubview(label)
+                self.myScrollView.addSubview(label)
             }
         }
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        let pageWidth = scrollView.frame.width
-        let currentPage = Int(floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1)
-        
-        if currentPage != currentLabelIndex {
-            currentLabelIndex = currentPage
-            tableView.reloadData()
+        if scrollView == myScrollView {
+            let pageWidth = scrollView.frame.width
+            let currentPage = Int(floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1)
+            
+            if currentPage != currentLabelIndex {
+                currentLabelIndex = currentPage
+                print(currentLabelIndex)
+                tableView.reloadData()
+            }
         }
     }
     
@@ -130,28 +124,7 @@ class UserInformationViewController: UIViewController, UITableViewDelegate, UITa
         currency.text = "Currency: \(account.currency)"
         label.addSubview(currency)
         
-        
-        NSLayoutConstraint.activate([
-            // BACKGROUND
-            background.leadingAnchor.constraint(equalTo: label.leadingAnchor, constant: 15),
-            background.trailingAnchor.constraint(equalTo: label.trailingAnchor, constant: -15),
-            background.topAnchor.constraint(equalTo: label.topAnchor, constant: 20),
-            background.heightAnchor.constraint(equalToConstant: 125),
-            
-            // IBAN
-            iban.topAnchor.constraint(equalTo: background.topAnchor, constant: 20),
-            iban.leadingAnchor.constraint(equalTo: background.leadingAnchor, constant: 20),
-            
-            // AMOUNT
-            amount.leadingAnchor.constraint(equalTo: iban.leadingAnchor),
-            amount.trailingAnchor.constraint(equalTo: background.trailingAnchor, constant: -20),
-            amount.topAnchor.constraint(equalTo: iban.bottomAnchor, constant: 10),
-            
-            // CURRENCY
-            currency.leadingAnchor.constraint(equalTo: amount.leadingAnchor),
-            currency.trailingAnchor.constraint(equalTo: amount.trailingAnchor),
-            currency.topAnchor.constraint(equalTo: amount.bottomAnchor, constant: 10)
-        ])
+        Constraints.setupAccountLabelConstraints(label: label, background: background, iban: iban, amount: amount, currency: currency)
         
         return label
     }
@@ -163,11 +136,7 @@ class UserInformationViewController: UIViewController, UITableViewDelegate, UITa
         transaction.font = UIFont.systemFont(ofSize: 25, weight: .bold)
         transaction.text = "Transactions"
         
-        NSLayoutConstraint.activate([
-            transaction.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            transaction.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
-            transaction.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 20),
-        ])
+        Constraints.setupTransactionTitleConstraints(transaction: transaction, view: view, scrollView: myScrollView)
     }
     
     func setupTableView() {
@@ -178,12 +147,7 @@ class UserInformationViewController: UIViewController, UITableViewDelegate, UITa
         tableView.dataSource = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
-        NSLayoutConstraint.activate([
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-            tableView.topAnchor.constraint(equalTo: transaction.bottomAnchor, constant: 20),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -15)
-        ])
+        Constraints.setupTableViewConstraints(tableView: tableView, view: view, transaction: transaction)
     }
     
     //MARK: - Table View
@@ -200,6 +164,7 @@ class UserInformationViewController: UIViewController, UITableViewDelegate, UITa
         cell.descriptionLabel.text = transaction?.description
         cell.amountLabel.text = transaction?.amount
         cell.typeLabel.text = transaction?.type
+        cell.selectionStyle = .none
         
         return cell
     }

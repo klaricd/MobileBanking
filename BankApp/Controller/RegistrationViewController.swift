@@ -41,13 +41,7 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         titleLabel.layer.masksToBounds = true
         titleLabel.text = "Registration"
         
-        
-        NSLayoutConstraint.activate([
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            titleLabel.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50),
-            titleLabel.widthAnchor.constraint(equalToConstant: 200),
-            titleLabel.heightAnchor.constraint(equalToConstant: 50)
-        ])
+        Constraints.setupRegistrationTitle(label: titleLabel, view: view)
     }
     
     func setupPasswordTextField() {
@@ -62,12 +56,7 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         passwordTextField.layer.cornerRadius = 10
         passwordTextField.placeholder = "Enter your password"
         
-        NSLayoutConstraint.activate([
-            passwordTextField.bottomAnchor.constraint(equalTo: passwordRepeatTextField.topAnchor, constant: -30),
-            passwordTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            passwordTextField.widthAnchor.constraint(equalToConstant: 250),
-            passwordTextField.heightAnchor.constraint(equalToConstant: 50)
-        ])
+        Constraints.setupRegistrationPassword(password: passwordTextField, passwordRepeat: passwordRepeatTextField, view: view)
     }
     
     func setupPasswordRepeatTextField() {
@@ -82,12 +71,7 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         passwordRepeatTextField.layer.cornerRadius = 10
         passwordRepeatTextField.placeholder = "Repeat your password"
         
-        NSLayoutConstraint.activate([
-            passwordRepeatTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            passwordRepeatTextField.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            passwordRepeatTextField.widthAnchor.constraint(equalToConstant: 250),
-            passwordRepeatTextField.heightAnchor.constraint(equalToConstant: 50)
-        ])
+        Constraints.setupRegistrationRepeatedPassword(passwordRepeat: passwordRepeatTextField, view: view)   
     }
     
     func setupButton() {
@@ -99,12 +83,7 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         registerButton.configuration?.baseForegroundColor = .black
         registerButton.configuration?.title = "Register"
         
-        NSLayoutConstraint.activate([
-            registerButton.topAnchor.constraint(equalTo: passwordRepeatTextField.bottomAnchor, constant: 30),
-            registerButton.centerXAnchor.constraint(equalTo: passwordRepeatTextField.centerXAnchor),
-            registerButton.widthAnchor.constraint(equalToConstant: 100),
-            registerButton.heightAnchor.constraint(equalToConstant: 40)
-        ])
+        Constraints.setupRegistrationButton(button: registerButton, passwordRepeat: passwordRepeatTextField)
         
         // add button action
         registerButton.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
